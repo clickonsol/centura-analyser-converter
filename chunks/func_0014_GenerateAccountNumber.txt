@@ -1,0 +1,22 @@
+Function GenerateAccountNumber(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns String
+    
+    Local Variables:
+        String: sAccountNumber
+        String: sIDPart
+        String: sRandomPart
+        Number: nRandom
+    
+    ! Format customer ID as 6-digit number
+    Set sIDPart = SalStrPadding(SalNumberToString(nCustomerID), "0", 6, FALSE)
+    
+    ! Generate random 4-digit suffix
+    Set nRandom = SalNumberRandom(1000, 9999)
+    Set sRandomPart = SalNumberToString(nRandom)
+    
+    ! Combine with company code
+    Set sAccountNumber = gsCompanyCode || sIDPart || sRandomPart
+    
+    Return sAccountNumber

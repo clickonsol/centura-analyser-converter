@@ -1,0 +1,41 @@
+Function CalculateCustomerLifetimeValue(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nLifetimeValue = 0
+        Number: nTotalOrders = 0
+        Number: nAvgOrderValue = 0
+        Number: nMonthsActive = 0
+        DateTime: dtFirstOrder
+        DateTime: dtLastOrder
+    
+    ! Calculate total order value
+    Set sSQL = "SELECT SUM(order_amount), COUNT(*), MIN(order_date), MAX(order_date) FROM orders WHERE customer_id = :nCustomerID AND order_status != 'CANCELLED'"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nLifetimeValue = SalNumberFromString(SalSqlGetField(hSql, 0))
+            Set nTotalOrders = SalNumberFromString(SalSqlGetField(hSql, 1))
+            Set dtFirstOrder = SalDateTimeFromString(SalSqlGetField(hSql, 2))
+            Set dtLastOrder = SalDateTimeFromString(SalSqlGetField(hSql, 3))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    ! Calculate additional metrics for potential future value
+    If nTotalOrders > 0
+        Set nAvgOrderValue = nLifetimeValue / nTotalOrders
+        Set nMonthsActive = SalDateDiff(dtFirstOrder, dtLastOrder, DT_Month)
+        
+        ! Simple projection based on activity
+        If nMonthsActive > 0
+            Set nLifetimeValue = nLifetimeValue + (nAvgOrderValue * (nTotalOrders / nMonthsActive) * 12)  ! Project 1 year forward
+        EndIf
+    EndIf
+    
+    Return nLifetimeValue

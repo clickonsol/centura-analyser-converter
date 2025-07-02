@@ -1,0 +1,34 @@
+Function SearchCustomers(sSearchCriteria, sSearchValue)
+    Parameters:
+        Receive String: sSearchCriteria
+        Receive String: sSearchValue
+    Returns Handle
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        String: sWhereClause
+    
+    ! Build WHERE clause based on search criteria
+    If sSearchCriteria = "NAME"
+        Set sWhereClause = "UPPER(customer_name) LIKE UPPER('%" || sSearchValue || "%')"
+    ElseIf sSearchCriteria = "PHONE"
+        Set sWhereClause = "phone LIKE '%" || CleanPhoneNumber(sSearchValue) || "%'"
+    ElseIf sSearchCriteria = "CUSTOMER_CODE"
+        Set sWhereClause = "customer_code = '" || sSearchValue || "'"
+    ElseIf sSearchCriteria = "CITY"
+        Set sWhereClause = "UPPER(city) LIKE UPPER('%" || sSearchValue || "%')"
+    ElseIf sSearchCriteria = "STATE"
+        Set sWhereClause = "UPPER(state) = UPPER('" || sSearchValue || "')"
+    Else
+        ! Default to name search
+        Set sWhereClause = "UPPER(customer_name) LIKE UPPER('%" || sSearchValue || "%')"
+    EndIf
+    
+    Set sSQL = "SELECT customer_id, customer_code, customer_name, phone, city, state, status FROM customers WHERE " || sWhereClause || " ORDER BY customer_name"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Return hSql
+    Else
+        Return hNULL
+    EndIf

@@ -1,0 +1,19 @@
+Function GeneratePaymentID()
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nMaxPaymentID = 0
+    
+    Set sSQL = "SELECT MAX(payment_id) FROM payments"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nMaxPaymentID = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return nMaxPaymentID + 1

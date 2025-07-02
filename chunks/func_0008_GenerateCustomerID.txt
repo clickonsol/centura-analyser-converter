@@ -1,0 +1,29 @@
+Function GenerateCustomerID()
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nMaxID = 0
+        Number: nNewID
+    
+    ! Get the highest existing customer ID
+    Set sSQL = "SELECT MAX(customer_id) FROM customers"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nMaxID = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    ! Generate new ID
+    Set nNewID = nMaxID + 1
+    
+    ! Ensure we don't have conflicts (unlikely but possible with concurrent access)
+    While CustomerIDExists(nNewID)
+        Set nNewID = nNewID + 1
+    EndWhile
+    
+    Return nNewID

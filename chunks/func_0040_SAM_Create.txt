@@ -1,0 +1,6 @@
+On SAM_Create
+    ! Window creation event
+    Call InitializeSystem()
+    If gbDebugMode
+        Call WriteToLog("Customer Management System initialized in debug mode")
+    EndIf

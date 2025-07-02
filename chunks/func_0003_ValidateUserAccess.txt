@@ -1,0 +1,48 @@
+Function ValidateUserAccess(sUserID)
+    Parameters:
+        Receive String: sUserID
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        String: sUserStatus
+        String: sPermissions
+        DateTime: dtLastLogin
+    
+    Set sSQL = "SELECT user_status, permissions, last_login_date FROM users WHERE user_id = :sUserID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set sUserStatus = SalSqlGetField(hSql, 0)
+            Set sPermissions = SalSqlGetField(hSql, 1)
+            Set dtLastLogin = SalDateTimeFromString(SalSqlGetField(hSql, 2))
+            
+            Call SalSqlDestroy(hSql)
+            
+            ! Check user status
+            If sUserStatus != "ACTIVE"
+                Call WriteToLog("User " || sUserID || " is not active")
+                Return FALSE
+            EndIf
+            
+            ! Check if user has required permissions
+            If NOT SalStrScan(sPermissions, "CUSTOMER_MGMT")
+                Call WriteToLog("User " || sUserID || " lacks customer management permissions")
+                Return FALSE
+            EndIf
+            
+            ! Update last access time
+            Call UpdateUserLastAccess(sUserID)
+            
+            Return TRUE
+        Else
+            Call WriteToLog("User " || sUserID || " not found in system")
+            Call SalSqlDestroy(hSql)
+            Return FALSE
+        EndIf
+    Else
+        Call WriteToLog("Database error during user validation")
+        Return FALSE
+    EndIf

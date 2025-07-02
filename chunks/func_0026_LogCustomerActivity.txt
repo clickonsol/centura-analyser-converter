@@ -1,0 +1,20 @@
+Function LogCustomerActivity(nCustomerID, sActivityType, sDescription)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive String: sActivityType
+        Receive String: sDescription
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        DateTime: dtNow
+        Number: nActivityID
+    
+    Set dtNow = SalDateCurrent()
+    Set nActivityID = GenerateActivityID()
+    
+    Set sSQL = "INSERT INTO customer_activity_log (activity_id, customer_id, activity_type, description, activity_date, created_by) VALUES (:nActivityID, :nCustomerID, :sActivityType, :sDescription, :dtNow, :gsCurrentUser)"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+    EndIf

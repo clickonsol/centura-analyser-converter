@@ -1,0 +1,51 @@
+Function UpdateCustomerInfo(nCustomerID, sName, sAddress, sCity, sState, sZip, sPhone)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive String: sName
+        Receive String: sAddress
+        Receive String: sCity
+        Receive String: sState
+        Receive String: sZip
+        Receive String: sPhone
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        String: sErrorDetails
+        DateTime: dtNow
+        String: sOldData
+        String: sNewData
+    
+    ! Validate input data
+    If NOT ValidateCustomerData(sName, sAddress, sCity, sState, sZip, sPhone, 0, sErrorDetails)
+        Call WriteToLog("Customer update validation failed: " || sErrorDetails)
+        Return FALSE
+    EndIf
+    
+    ! Check if customer exists
+    If NOT CustomerIDExists(nCustomerID)
+        Call WriteToLog("Customer ID " || SalNumberToString(nCustomerID) || " does not exist")
+        Return FALSE
+    EndIf
+    
+    ! Get old data for audit trail
+    Set sOldData = GetCustomerDataForAudit(nCustomerID)
+    
+    Set dtNow = SalDateCurrent()
+    
+    ! Update customer record
+    Set sSQL = "UPDATE customers SET customer_name = :sName, address = :sAddress, city = :sCity, state = :sState, zip_code = :sZip, phone = :sPhone, modified_date = :dtNow, modified_by = :gsCurrentUser WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        
+        ! Create audit trail
+        Set sNewData = "Name: " || sName || ", Address: " || sAddress || ", City: " || sCity || ", State: " || sState || ", ZIP: " || sZip || ", Phone: " || sPhone
+        Call LogCustomerActivity(nCustomerID, "UPDATED", "Customer information updated. Old: " || sOldData || " New: " || sNewData)
+        
+        Return TRUE
+    Else
+        Call WriteToLog("Failed to update customer ID " || SalNumberToString(nCustomerID))
+        Return FALSE
+    EndIf

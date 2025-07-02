@@ -1,0 +1,42 @@
+Function RequestCreditApproval(nCustomerID, nRequestedAmount)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nRequestedAmount
+    Returns Boolean
+    
+    Local Variables:
+        Number: nCreditScore
+        Number: nCurrentBalance
+        Number: nCreditLimit
+        Number: nPaymentHistory
+        Boolean: bApproved = FALSE
+        String: sReason = ""
+    
+    ! Get customer credit information
+    Call GetCustomerCreditInfo(nCustomerID, nCreditScore, nCurrentBalance, nCreditLimit, nPaymentHistory)
+    
+    ! Apply business rules for credit approval
+    If nCreditScore >= 650
+        If nPaymentHistory >= 80  ! 80% on-time payment rate
+            If (nCurrentBalance + nRequestedAmount) <= (nCreditLimit * 1.2)  ! Allow 20% over limit
+                Set bApproved = TRUE
+                Set sReason = "Auto-approved based on credit score and payment history"
+            Else
+                Set sReason = "Amount exceeds allowable credit extension"
+            EndIf
+        Else
+            Set sReason = "Poor payment history"
+        EndIf
+    Else
+        Set sReason = "Credit score below minimum threshold"
+    EndIf
+    
+    ! Log the credit approval request
+    Call LogCreditApprovalRequest(nCustomerID, nRequestedAmount, bApproved, sReason)
+    
+    ! If approved, temporarily increase credit limit
+    If bApproved
+        Call TemporarilyIncreaseCreditLimit(nCustomerID, nRequestedAmount)
+    EndIf
+    
+    Return bApproved

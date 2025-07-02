@@ -1,0 +1,64 @@
+Function GenerateCustomerSummaryReport(dtStartDate, dtEndDate)
+    Parameters:
+        Receive DateTime: dtStartDate
+        Receive DateTime: dtEndDate
+    Returns String
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        String: sReport
+        Number: nTotalCustomers = 0
+        Number: nActiveCustomers = 0
+        Number: nInactiveCustomers = 0
+        Number: nSuspendedCustomers = 0
+        Number: nTotalCreditLimit = 0
+        Number: nTotalBalance = 0
+    
+    Set sReport = "CUSTOMER SUMMARY REPORT\n"
+    Set sReport = sReport || "Generated: " || SalDateToString(SalDateCurrent(), "MM/DD/YYYY HH:MM:SS") || "\n"
+    Set sReport = sReport || "Period: " || SalDateToString(dtStartDate, "MM/DD/YYYY") || " to " || SalDateToString(dtEndDate, "MM/DD/YYYY") || "\n"
+    Set sReport = sReport || "=" || SalStrReplicate("=", 60) || "\n\n"
+    
+    ! Get customer counts by status
+    Set sSQL = "SELECT status, COUNT(*) FROM customers WHERE created_date BETWEEN :dtStartDate AND :dtEndDate GROUP BY status"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        While SalSqlFetchNext(hSql, bFetch) AND bFetch
+            If SalSqlGetField(hSql, 0) = CUST_STATUS_ACTIVE
+                Set nActiveCustomers = SalNumberFromString(SalSqlGetField(hSql, 1))
+            ElseIf SalSqlGetField(hSql, 0) = CUST_STATUS_INACTIVE
+                Set nInactiveCustomers = SalNumberFromString(SalSqlGetField(hSql, 1))
+            ElseIf SalSqlGetField(hSql, 0) = CUST_STATUS_SUSPENDED
+                Set nSuspendedCustomers = SalNumberFromString(SalSqlGetField(hSql, 1))
+            EndIf
+        EndWhile
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Set nTotalCustomers = nActiveCustomers + nInactiveCustomers + nSuspendedCustomers
+    
+    Set sReport = sReport || "CUSTOMER STATISTICS:\n"
+    Set sReport = sReport || "Total Customers: " || SalNumberToString(nTotalCustomers) || "\n"
+    Set sReport = sReport || "Active Customers: " || SalNumberToString(nActiveCustomers) || "\n"
+    Set sReport = sReport || "Inactive Customers: " || SalNumberToString(nInactiveCustomers) || "\n"
+    Set sReport = sReport || "Suspended Customers: " || SalNumberToString(nSuspendedCustomers) || "\n\n"
+    
+    ! Get credit information
+    Set sSQL = "SELECT SUM(ca.credit_limit), SUM(ca.current_balance) FROM customer_accounts ca JOIN customers c ON ca.customer_id = c.customer_id WHERE c.created_date BETWEEN :dtStartDate AND :dtEndDate"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nTotalCreditLimit = SalNumberFromString(SalSqlGetField(hSql, 0))
+            Set nTotalBalance = SalNumberFromString(SalSqlGetField(hSql, 1))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Set sReport = sReport || "CREDIT STATISTICS:\n"
+    Set sReport = sReport || "Total Credit Limit: $" || SalNumberToString(nTotalCreditLimit, "###,##0.00") || "\n"
+    Set sReport = sReport || "Total Outstanding Balance: $" || SalNumberToString(nTotalBalance, "###,##0.00") || "\n"
+    Set sReport = sReport || "Credit Utilization: " || SalNumberToString((nTotalBalance / nTotalCreditLimit) * 100, "##0.00") || "%\n"
+    
+    Return sReport

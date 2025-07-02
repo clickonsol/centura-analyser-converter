@@ -1,0 +1,27 @@
+Function CheckDuplicateCustomer(sCustomerName, sPhone)
+    Parameters:
+        Receive String: sCustomerName
+        Receive String: sPhone
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Boolean: bDuplicate = FALSE
+        String: sCleanPhone
+    
+    ! Clean phone number for comparison
+    Set sCleanPhone = CleanPhoneNumber(sPhone)
+    
+    ! Check for duplicate by name and phone
+    Set sSQL = "SELECT 1 FROM customers WHERE UPPER(customer_name) = UPPER(:sCustomerName) AND phone = :sCleanPhone AND status != 'D'"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set bDuplicate = TRUE
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return bDuplicate

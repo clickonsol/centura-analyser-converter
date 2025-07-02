@@ -1,0 +1,21 @@
+Function GenerateOrderID()
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nMaxOrderID = 0
+        Number: nNewOrderID
+    
+    Set sSQL = "SELECT MAX(order_id) FROM orders"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nMaxOrderID = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Set nNewOrderID = nMaxOrderID + 1
+    Return nNewOrderID

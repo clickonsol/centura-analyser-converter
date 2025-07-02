@@ -1,0 +1,52 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function WriteToLog(sMessage)
+    Parameters:
+        Receive String: sMessage
+    Local Variables:
+        String: sLogEntry
+        DateTime: dtNow
+        String: sLogFile = "customer_system.log"
+        Handle: hFile
+    
+    Set dtNow = SalDateCurrent()
+    Set sLogEntry = SalDateToString(dtNow, "YYYY-MM-DD HH:MM:SS") || " [" || gsCurrentUser || "] " || sMessage
+    
+    If gbDebugMode
+        ! Also display in debug mode
+        Call SalMessageBox(sLogEntry, "Debug Log", MB_OK)
+    EndIf
+    
+    ! Write to log file
+    If SalFileOpen(hFile, sLogFile, OF_Append + OF_Create)
+        Call SalFileWrite(hFile, sLogEntry || "\n")
+        Call SalFileClose(hFile)
+    EndIf
+
+! Additional utility and business logic functions would continue...
+! This represents approximately 1000 lines of the 2000 line sample
+! The remaining functions would include order processing, reporting,
+! customer search, credit management, and various utility functions.
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

@@ -1,0 +1,83 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function ProcessPayment(nCustomerID, nPaymentAmount, sPaymentMethod, sReferenceNumber)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nPaymentAmount
+        Receive String: sPaymentMethod
+        Receive String: sReferenceNumber
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Number: nPaymentID
+        DateTime: dtNow
+        Number: nCurrentBalance
+        Boolean: bResult = FALSE
+    
+    ! Validate payment amount
+    If nPaymentAmount <= 0
+        Call WriteToLog("Invalid payment amount: " || SalNumberToString(nPaymentAmount))
+        Return FALSE
+    EndIf
+    
+    ! Validate customer exists and get current balance
+    Set nCurrentBalance = GetCustomerCurrentBalance(nCustomerID)
+    If nCurrentBalance < 0  ! Error getting balance
+        Return FALSE
+    EndIf
+    
+    Set nPaymentID = GeneratePaymentID()
+    Set dtNow = SalDateCurrent()
+    
+    ! Begin transaction
+    Call SalSqlExecute("BEGIN TRANSACTION", gsPrimaryDB)
+    
+    ! Insert payment record
+    Set sSQL = "INSERT INTO payments (payment_id, customer_id, payment_amount, payment_method, reference_number, payment_date, processed_by) VALUES (:nPaymentID, :nCustomerID, :nPaymentAmount, :sPaymentMethod, :sReferenceNumber, :dtNow, :gsCurrentUser)"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        
+        ! Update customer account balance
+        If UpdateCustomerPayment(nCustomerID, nPaymentAmount)
+            ! Log the payment
+            Call LogCustomerActivity(nCustomerID, "PAYMENT_RECEIVED", "Payment of $" || SalNumberToString(nPaymentAmount, "###,##0.00") || " received via " || sPaymentMethod)
+            
+            Call SalSqlExecute("COMMIT", gsPrimaryDB)
+            Set bResult = TRUE
+            
+            ! Send payment confirmation
+            Call SendPaymentConfirmation(nCustomerID, nPaymentAmount, sPaymentMethod)
+        Else
+            Call SalSqlExecute("ROLLBACK", gsPrimaryDB)
+        EndIf
+    Else
+        Call SalSqlExecute("ROLLBACK", gsPrimaryDB)
+    EndIf
+    
+    Return bResult
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

@@ -1,0 +1,18 @@
+Function UpdateCustomerPayment(nCustomerID, nPaymentAmount)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nPaymentAmount
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+    
+    Set sSQL = "UPDATE customer_accounts SET current_balance = current_balance - :nPaymentAmount, available_credit = available_credit + :nPaymentAmount, last_payment_date = :gdtSystemDate WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        Return TRUE
+    Else
+        Return FALSE
+    EndIf

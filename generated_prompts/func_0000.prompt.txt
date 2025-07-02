@@ -1,0 +1,51 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+! SampleCenturaCode.apt - Legacy Customer Management System
+! This is a sample Centura (SQLWindows) application for testing the analyzer
+! Contains typical business logic patterns found in legacy enterprise systems
+
+Outline: CustomerManagement
+Database: ORCL:customer_db
+Author: Legacy Development Team
+Created: 1995-2001
+Modified: Multiple times over decades
+
+! Global Variables
+String: gsPrimaryDB = "ORCL:customer_db"
+String: gsCurrentUser
+String: gsCompanyCode
+Number: gnCustomerID
+Number: gnCurrentTranID
+Boolean: gbDebugMode = FALSE
+DateTime: gdtSystemDate
+String: gsErrorMessage
+
+! Constants
+String: CUST_STATUS_ACTIVE = "A"
+String: CUST_STATUS_INACTIVE = "I"
+String: CUST_STATUS_SUSPENDED = "S"
+Number: MAX_CREDIT_LIMIT = 50000.00
+Number: MIN_ORDER_AMOUNT = 10.00
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

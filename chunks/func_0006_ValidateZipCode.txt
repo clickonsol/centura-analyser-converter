@@ -1,0 +1,29 @@
+Function ValidateZipCode(sZipCode)
+    Parameters:
+        Receive String: sZipCode
+    Returns Boolean
+    
+    Local Variables:
+        String: sCleanZip
+        Number: nLength
+    
+    Set sCleanZip = SalStrTrim(sZipCode)
+    Set nLength = SalStrLength(sCleanZip)
+    
+    ! Check for standard 5-digit ZIP
+    If nLength = 5
+        If SalStrIsNumeric(sCleanZip)
+            Return TRUE
+        EndIf
+    EndIf
+    
+    ! Check for ZIP+4 format (12345-6789)
+    If nLength = 10
+        If SalStrMid(sCleanZip, 5, 1) = "-"
+            If SalStrIsNumeric(SalStrLeft(sCleanZip, 5)) AND SalStrIsNumeric(SalStrRight(sCleanZip, 4))
+                Return TRUE
+            EndIf
+        EndIf
+    EndIf
+    
+    Return FALSE

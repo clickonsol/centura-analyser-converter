@@ -1,0 +1,33 @@
+Function GenerateCustomerCode(sCustomerName, nCustomerID)
+    Parameters:
+        Receive String: sCustomerName
+        Receive Number: nCustomerID
+    Returns String
+    
+    Local Variables:
+        String: sCode
+        String: sCleanName
+        String: sPrefix
+        String: sIDPart
+    
+    ! Clean the customer name for code generation
+    Set sCleanName = SalStrUpper(SalStrTrim(sCustomerName))
+    Set sCleanName = SalStrReplaceAll(sCleanName, " ", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, "&", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, ",", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, ".", "")
+    
+    ! Take first 3 characters of clean name
+    If SalStrLength(sCleanName) >= 3
+        Set sPrefix = SalStrLeft(sCleanName, 3)
+    Else
+        Set sPrefix = SalStrPadding(sCleanName, "X", 3, TRUE)
+    EndIf
+    
+    ! Format customer ID as 5-digit number
+    Set sIDPart = SalStrPadding(SalNumberToString(nCustomerID), "0", 5, FALSE)
+    
+    ! Combine prefix and ID
+    Set sCode = sPrefix || sIDPart
+    
+    Return sCode

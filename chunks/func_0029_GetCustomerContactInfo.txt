@@ -1,0 +1,20 @@
+Function GetCustomerContactInfo(nCustomerID, sName, sEmail)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive/Return String: sName
+        Receive/Return String: sEmail
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+    
+    Set sSQL = "SELECT customer_name, email_address FROM customers WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set sName = SalSqlGetField(hSql, 0)
+            Set sEmail = SalSqlGetField(hSql, 1)
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf

@@ -1,0 +1,26 @@
+! SampleCenturaCode.apt - Legacy Customer Management System
+! This is a sample Centura (SQLWindows) application for testing the analyzer
+! Contains typical business logic patterns found in legacy enterprise systems
+
+Outline: CustomerManagement
+Database: ORCL:customer_db
+Author: Legacy Development Team
+Created: 1995-2001
+Modified: Multiple times over decades
+
+! Global Variables
+String: gsPrimaryDB = "ORCL:customer_db"
+String: gsCurrentUser
+String: gsCompanyCode
+Number: gnCustomerID
+Number: gnCurrentTranID
+Boolean: gbDebugMode = FALSE
+DateTime: gdtSystemDate
+String: gsErrorMessage
+
+! Constants
+String: CUST_STATUS_ACTIVE = "A"
+String: CUST_STATUS_INACTIVE = "I"
+String: CUST_STATUS_SUSPENDED = "S"
+Number: MAX_CREDIT_LIMIT = 50000.00
+Number: MIN_ORDER_AMOUNT = 10.00

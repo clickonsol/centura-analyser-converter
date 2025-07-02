@@ -1,0 +1,25 @@
+Function CreateCustomerAccount(nCustomerID, nCreditLimit)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nCreditLimit
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        String: sAccountNumber
+        DateTime: dtNow
+    
+    ! Generate account number
+    Set sAccountNumber = GenerateAccountNumber(nCustomerID)
+    Set dtNow = SalDateCurrent()
+    
+    ! Insert account record
+    Set sSQL = "INSERT INTO customer_accounts (customer_id, account_number, credit_limit, current_balance, available_credit, account_status, created_date, created_by) VALUES (:nCustomerID, :sAccountNumber, :nCreditLimit, 0, :nCreditLimit, 'A', :dtNow, :gsCurrentUser)"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        Return TRUE
+    Else
+        Return FALSE
+    EndIf

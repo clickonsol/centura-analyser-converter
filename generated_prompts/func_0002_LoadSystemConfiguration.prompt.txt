@@ -1,0 +1,47 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function LoadSystemConfiguration()
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+    
+    Set sSQL = "SELECT config_name, config_value FROM system_config WHERE active_flag = 'Y'"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        While SalSqlFetchNext(hSql, bFetch) AND bFetch
+            ! Process configuration settings
+            If SalSqlGetField(hSql, 0) = "COMPANY_CODE"
+                Set gsCompanyCode = SalSqlGetField(hSql, 1)
+            ElseIf SalSqlGetField(hSql, 0) = "DEFAULT_CREDIT_LIMIT"
+                ! Set credit limit configuration
+                Call SetCreditLimitDefaults(SalNumberFromString(SalSqlGetField(hSql, 1)))
+            EndIf
+        EndWhile
+        Call SalSqlDestroy(hSql)
+    Else
+        Call WriteToLog("WARNING: Could not load system configuration")
+    EndIf
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

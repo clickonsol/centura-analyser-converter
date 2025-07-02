@@ -1,0 +1,28 @@
+Proc CleanupOldRecords()
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        DateTime: dtCutoffDate
+        Number: nRecordsDeleted
+    
+    ! Set cutoff date to 7 years ago
+    Set dtCutoffDate = SalDateAdd(SalDateCurrent(), -7, DT_Year)
+    
+    Call WriteToLog("Starting cleanup of records older than " || SalDateToString(dtCutoffDate, "MM/DD/YYYY"))
+    
+    ! Clean up old activity logs
+    Set sSQL = "DELETE FROM customer_activity_log WHERE activity_date < :dtCutoffDate"
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Set nRecordsDeleted = SalSqlGetResultCount(hSql)
+        Call SalSqlDestroy(hSql)
+        Call WriteToLog("Deleted " || SalNumberToString(nRecordsDeleted) || " old activity log records")
+    EndIf
+    
+    ! Clean up old payment records (keep financial records longer)
+    Set dtCutoffDate = SalDateAdd(SalDateCurrent(), -10, DT_Year)
+    Set sSQL = "DELETE FROM payments WHERE payment_date < :dtCutoffDate"
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Set nRecordsDeleted = SalSqlGetResultCount(hSql)
+        Call SalSqlDestroy(hSql)
+        Call WriteToLog("Deleted " || SalNumberToString(nRecordsDeleted) || " old payment records")
+    EndIf

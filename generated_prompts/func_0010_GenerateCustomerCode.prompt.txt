@@ -1,0 +1,58 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function GenerateCustomerCode(sCustomerName, nCustomerID)
+    Parameters:
+        Receive String: sCustomerName
+        Receive Number: nCustomerID
+    Returns String
+    
+    Local Variables:
+        String: sCode
+        String: sCleanName
+        String: sPrefix
+        String: sIDPart
+    
+    ! Clean the customer name for code generation
+    Set sCleanName = SalStrUpper(SalStrTrim(sCustomerName))
+    Set sCleanName = SalStrReplaceAll(sCleanName, " ", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, "&", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, ",", "")
+    Set sCleanName = SalStrReplaceAll(sCleanName, ".", "")
+    
+    ! Take first 3 characters of clean name
+    If SalStrLength(sCleanName) >= 3
+        Set sPrefix = SalStrLeft(sCleanName, 3)
+    Else
+        Set sPrefix = SalStrPadding(sCleanName, "X", 3, TRUE)
+    EndIf
+    
+    ! Format customer ID as 5-digit number
+    Set sIDPart = SalStrPadding(SalNumberToString(nCustomerID), "0", 5, FALSE)
+    
+    ! Combine prefix and ID
+    Set sCode = sPrefix || sIDPart
+    
+    Return sCode
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

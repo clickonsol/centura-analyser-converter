@@ -1,0 +1,21 @@
+Function CustomerIDExists(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Boolean: bExists = FALSE
+    
+    Set sSQL = "SELECT 1 FROM customers WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set bExists = TRUE
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return bExists

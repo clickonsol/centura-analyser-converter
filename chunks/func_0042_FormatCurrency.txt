@@ -1,0 +1,6 @@
+Local Function FormatCurrency(nAmount)
+    Parameters:
+        Receive Number: nAmount
+    Returns String
+    
+    Return "$" || SalNumberToString(nAmount, "###,##0.00")

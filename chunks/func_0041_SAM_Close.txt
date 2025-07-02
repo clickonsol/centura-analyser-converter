@@ -1,0 +1,4 @@
+On SAM_Close
+    ! Window closing event
+    Call WriteToLog("Customer Management System shutting down")
+    Call SalSqlDisconnect(gsPrimaryDB)

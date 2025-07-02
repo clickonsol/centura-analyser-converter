@@ -1,0 +1,18 @@
+Function UpdateCustomerBalance(nCustomerID, nOrderAmount)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nOrderAmount
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+    
+    Set sSQL = "UPDATE customer_accounts SET current_balance = current_balance + :nOrderAmount, available_credit = available_credit - :nOrderAmount WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        Return TRUE
+    Else
+        Return FALSE
+    EndIf

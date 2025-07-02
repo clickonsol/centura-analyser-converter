@@ -1,0 +1,21 @@
+Function GetCustomerCurrentBalance(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nBalance = -1  ! Error indicator
+    
+    Set sSQL = "SELECT current_balance FROM customer_accounts WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nBalance = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return nBalance

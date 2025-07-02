@@ -1,0 +1,22 @@
+Function CreateOrderRecord(nOrderID, nCustomerID, nAmount, sDetails, dtOrderDate)
+    Parameters:
+        Receive Number: nOrderID
+        Receive Number: nCustomerID
+        Receive Number: nAmount
+        Receive String: sDetails
+        Receive DateTime: dtOrderDate
+    Returns Boolean
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        String: sOrderStatus = "PENDING"
+    
+    Set sSQL = "INSERT INTO orders (order_id, customer_id, order_amount, order_details, order_date, order_status, created_by) VALUES (:nOrderID, :nCustomerID, :nAmount, :sDetails, :dtOrderDate, :sOrderStatus, :gsCurrentUser)"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        Call SalSqlDestroy(hSql)
+        Return TRUE
+    Else
+        Return FALSE
+    EndIf

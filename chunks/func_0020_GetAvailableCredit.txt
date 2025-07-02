@@ -1,0 +1,21 @@
+Function GetAvailableCredit(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nAvailableCredit = 0
+    
+    Set sSQL = "SELECT available_credit FROM customer_accounts WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nAvailableCredit = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return nAvailableCredit

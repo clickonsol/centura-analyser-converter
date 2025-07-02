@@ -1,0 +1,20 @@
+Function SendEmailNotification(sToAddress, sSubject, sMessage)
+    Parameters:
+        Receive String: sToAddress
+        Receive String: sSubject
+        Receive String: sMessage
+    Returns Boolean
+    
+    Local Variables:
+        Boolean: bResult = FALSE
+        String: sMailCommand
+    
+    ! This would typically integrate with an email system
+    ! For this example, we'll simulate the email sending
+    Set sMailCommand = "SEND_EMAIL TO:" || sToAddress || " SUBJECT:" || sSubject
+    
+    ! Log the email attempt
+    Call WriteToLog("Email notification sent: " || sMailCommand)
+    Set bResult = TRUE
+    
+    Return bResult

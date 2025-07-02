@@ -1,0 +1,35 @@
+Function SendOrderConfirmation(nCustomerID, nOrderID, nOrderAmount)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nOrderID
+        Receive Number: nOrderAmount
+    
+    Local Variables:
+        String: sCustomerEmail
+        String: sCustomerName
+        String: sMessage
+        Boolean: bEmailSent
+    
+    ! Get customer contact information
+    Call GetCustomerContactInfo(nCustomerID, sCustomerName, sCustomerEmail)
+    
+    If SalStrLength(sCustomerEmail) > 0
+        ! Build confirmation message
+        Set sMessage = "Dear " || sCustomerName || ",\n\n"
+        Set sMessage = sMessage || "Your order has been received and is being processed.\n\n"
+        Set sMessage = sMessage || "Order Details:\n"
+        Set sMessage = sMessage || "Order ID: " || SalNumberToString(nOrderID) || "\n"
+        Set sMessage = sMessage || "Order Amount: $" || SalNumberToString(nOrderAmount, "###,##0.00") || "\n"
+        Set sMessage = sMessage || "Order Date: " || SalDateToString(SalDateCurrent(), "MM/DD/YYYY") || "\n\n"
+        Set sMessage = sMessage || "Thank you for your business!\n"
+        Set sMessage = sMessage || "Customer Service Team"
+        
+        ! Send email confirmation
+        Set bEmailSent = SendEmailNotification(sCustomerEmail, "Order Confirmation", sMessage)
+        
+        If bEmailSent
+            Call LogCustomerActivity(nCustomerID, "EMAIL_SENT", "Order confirmation sent to " || sCustomerEmail)
+        Else
+            Call WriteToLog("Failed to send order confirmation email to customer " || SalNumberToString(nCustomerID))
+        EndIf
+    EndIf

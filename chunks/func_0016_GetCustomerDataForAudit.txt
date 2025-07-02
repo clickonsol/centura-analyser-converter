@@ -1,0 +1,21 @@
+Function GetCustomerDataForAudit(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns String
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        String: sData = ""
+    
+    Set sSQL = "SELECT customer_name, address, city, state, zip_code, phone FROM customers WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set sData = "Name: " || SalSqlGetField(hSql, 0) || ", Address: " || SalSqlGetField(hSql, 1) || ", City: " || SalSqlGetField(hSql, 2) || ", State: " || SalSqlGetField(hSql, 3) || ", ZIP: " || SalSqlGetField(hSql, 4) || ", Phone: " || SalSqlGetField(hSql, 5)
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return sData

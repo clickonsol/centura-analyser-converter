@@ -1,0 +1,21 @@
+Function GetCustomerStatus(nCustomerID)
+    Parameters:
+        Receive Number: nCustomerID
+    Returns String
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        String: sStatus = ""
+    
+    Set sSQL = "SELECT status FROM customers WHERE customer_id = :nCustomerID"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set sStatus = SalSqlGetField(hSql, 0)
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return sStatus

@@ -1,0 +1,19 @@
+Function GenerateActivityID()
+    Returns Number
+    
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+        Number: nMaxActivityID = 0
+    
+    Set sSQL = "SELECT MAX(activity_id) FROM customer_activity_log"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        If SalSqlFetchNext(hSql, bFetch) AND bFetch
+            Set nMaxActivityID = SalNumberFromString(SalSqlGetField(hSql, 0))
+        EndIf
+        Call SalSqlDestroy(hSql)
+    EndIf
+    
+    Return nMaxActivityID + 1

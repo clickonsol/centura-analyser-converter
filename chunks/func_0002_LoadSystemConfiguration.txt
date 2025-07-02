@@ -1,0 +1,22 @@
+Function LoadSystemConfiguration()
+    Local Variables:
+        Handle: hSql
+        String: sSQL
+        Boolean: bFetch
+    
+    Set sSQL = "SELECT config_name, config_value FROM system_config WHERE active_flag = 'Y'"
+    
+    If SalSqlPrepareAndExecute(hSql, sSQL, gsPrimaryDB)
+        While SalSqlFetchNext(hSql, bFetch) AND bFetch
+            ! Process configuration settings
+            If SalSqlGetField(hSql, 0) = "COMPANY_CODE"
+                Set gsCompanyCode = SalSqlGetField(hSql, 1)
+            ElseIf SalSqlGetField(hSql, 0) = "DEFAULT_CREDIT_LIMIT"
+                ! Set credit limit configuration
+                Call SetCreditLimitDefaults(SalNumberFromString(SalSqlGetField(hSql, 1)))
+            EndIf
+        EndWhile
+        Call SalSqlDestroy(hSql)
+    Else
+        Call WriteToLog("WARNING: Could not load system configuration")
+    EndIf

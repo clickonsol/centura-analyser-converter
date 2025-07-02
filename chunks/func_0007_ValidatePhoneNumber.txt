@@ -1,0 +1,30 @@
+Function ValidatePhoneNumber(sPhone)
+    Parameters:
+        Receive String: sPhone
+    Returns Boolean
+    
+    Local Variables:
+        String: sCleanPhone
+        Number: nLength
+    
+    ! Remove common formatting characters
+    Set sCleanPhone = SalStrTrim(sPhone)
+    Set sCleanPhone = SalStrReplaceAll(sCleanPhone, "(", "")
+    Set sCleanPhone = SalStrReplaceAll(sCleanPhone, ")", "")
+    Set sCleanPhone = SalStrReplaceAll(sCleanPhone, "-", "")
+    Set sCleanPhone = SalStrReplaceAll(sCleanPhone, " ", "")
+    Set sCleanPhone = SalStrReplaceAll(sCleanPhone, ".", "")
+    
+    Set nLength = SalStrLength(sCleanPhone)
+    
+    ! Check for 10-digit US phone number
+    If nLength = 10 AND SalStrIsNumeric(sCleanPhone)
+        Return TRUE
+    EndIf
+    
+    ! Check for 11-digit with country code
+    If nLength = 11 AND SalStrIsNumeric(sCleanPhone) AND SalStrLeft(sCleanPhone, 1) = "1"
+        Return TRUE
+    EndIf
+    
+    Return FALSE

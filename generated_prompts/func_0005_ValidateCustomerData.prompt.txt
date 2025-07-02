@@ -1,0 +1,85 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function ValidateCustomerData(sName, sAddress, sCity, sState, sZip, sPhone, nCreditLimit, sErrorDetails)
+    Parameters:
+        Receive String: sName
+        Receive String: sAddress
+        Receive String: sCity
+        Receive String: sState
+        Receive String: sZip
+        Receive String: sPhone
+        Receive Number: nCreditLimit
+        Receive/Return String: sErrorDetails
+    Returns Boolean
+    
+    Local Variables:
+        Boolean: bValid = TRUE
+        String: sErrors = ""
+    
+    ! Validate name
+    If SalStrLength(SalStrTrim(sName)) < 2
+        Set sErrors = sErrors || "Customer name must be at least 2 characters. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate address
+    If SalStrLength(SalStrTrim(sAddress)) < 5
+        Set sErrors = sErrors || "Address must be at least 5 characters. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate city
+    If SalStrLength(SalStrTrim(sCity)) < 2
+        Set sErrors = sErrors || "City must be at least 2 characters. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate state (assuming US states)
+    If SalStrLength(sState) != 2
+        Set sErrors = sErrors || "State must be 2 characters. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate ZIP code
+    If NOT ValidateZipCode(sZip)
+        Set sErrors = sErrors || "Invalid ZIP code format. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate phone number
+    If NOT ValidatePhoneNumber(sPhone)
+        Set sErrors = sErrors || "Invalid phone number format. "
+        Set bValid = FALSE
+    EndIf
+    
+    ! Validate credit limit
+    If nCreditLimit < 0 OR nCreditLimit > MAX_CREDIT_LIMIT
+        Set sErrors = sErrors || "Credit limit must be between 0 and " || SalNumberToString(MAX_CREDIT_LIMIT) || ". "
+        Set bValid = FALSE
+    EndIf
+    
+    Set sErrorDetails = sErrors
+    Return bValid
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.

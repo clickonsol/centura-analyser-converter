@@ -1,0 +1,35 @@
+Function GenerateCustomerReport(sReportType, dtStartDate, dtEndDate)
+    Parameters:
+        Receive String: sReportType
+        Receive DateTime: dtStartDate
+        Receive DateTime: dtEndDate
+    Returns String
+    
+    Local Variables:
+        String: sReportFile
+        String: sReportContent
+        Handle: hFile
+        DateTime: dtNow
+    
+    Set dtNow = SalDateCurrent()
+    Set sReportFile = "reports\\" || sReportType || "_" || SalDateToString(dtNow, "YYYYMMDD_HHMMSS") || ".txt"
+    
+    If sReportType = "CUSTOMER_SUMMARY"
+        Set sReportContent = GenerateCustomerSummaryReport(dtStartDate, dtEndDate)
+    ElseIf sReportType = "CREDIT_ANALYSIS"
+        Set sReportContent = GenerateCreditAnalysisReport(dtStartDate, dtEndDate)
+    ElseIf sReportType = "ORDER_ACTIVITY"
+        Set sReportContent = GenerateOrderActivityReport(dtStartDate, dtEndDate)
+    ElseIf sReportType = "PAYMENT_HISTORY"
+        Set sReportContent = GeneratePaymentHistoryReport(dtStartDate, dtEndDate)
+    Else
+        Set sReportContent = "Unknown report type: " || sReportType
+    EndIf
+    
+    ! Write report to file
+    If SalFileOpen(hFile, sReportFile, OF_Create)
+        Call SalFileWrite(hFile, sReportContent)
+        Call SalFileClose(hFile)
+    EndIf
+    
+    Return sReportFile

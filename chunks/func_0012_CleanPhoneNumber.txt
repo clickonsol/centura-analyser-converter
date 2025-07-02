@@ -1,0 +1,16 @@
+Function CleanPhoneNumber(sPhone)
+    Parameters:
+        Receive String: sPhone
+    Returns String
+    
+    Local Variables:
+        String: sClean
+    
+    Set sClean = SalStrTrim(sPhone)
+    Set sClean = SalStrReplaceAll(sClean, "(", "")
+    Set sClean = SalStrReplaceAll(sClean, ")", "")
+    Set sClean = SalStrReplaceAll(sClean, "-", "")
+    Set sClean = SalStrReplaceAll(sClean, " ", "")
+    Set sClean = SalStrReplaceAll(sClean, ".", "")
+    
+    Return sClean

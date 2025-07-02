@@ -1,0 +1,102 @@
+# Centura Function Analysis
+
+## Task
+Analyze the following Centura (SQLWindows) function and provide a detailed summary.
+
+## Function Code
+```centura
+Function ProcessCustomerOrder(nCustomerID, nOrderAmount, sOrderDetails)
+    Parameters:
+        Receive Number: nCustomerID
+        Receive Number: nOrderAmount
+        Receive String: sOrderDetails
+    Returns Number
+    
+    Local Variables:
+        Number: nOrderID = -1
+        Number: nAvailableCredit
+        Boolean: bCreditApproved
+        String: sCustomerStatus
+        DateTime: dtNow
+    
+    ! Validate order amount
+    If nOrderAmount < MIN_ORDER_AMOUNT
+        Call WriteToLog("Order amount below minimum: " || SalNumberToString(nOrderAmount))
+        Return -1
+    EndIf
+    
+    ! Check customer status
+    Set sCustomerStatus = GetCustomerStatus(nCustomerID)
+    If sCustomerStatus != CUST_STATUS_ACTIVE
+        Call WriteToLog("Customer " || SalNumberToString(nCustomerID) || " is not active. Status: " || sCustomerStatus)
+        Return -2
+    EndIf
+    
+    ! Check available credit
+    Set nAvailableCredit = GetAvailableCredit(nCustomerID)
+    If nAvailableCredit < nOrderAmount
+        Call WriteToLog("Insufficient credit for customer " || SalNumberToString(nCustomerID) || ". Available: " || SalNumberToString(nAvailableCredit) || ", Required: " || SalNumberToString(nOrderAmount))
+        
+        ! Attempt credit approval for larger amounts
+        If nOrderAmount > 1000.00
+            Set bCreditApproved = RequestCreditApproval(nCustomerID, nOrderAmount)
+            If NOT bCreditApproved
+                Return -3
+            EndIf
+        Else
+            Return -3
+        EndIf
+    EndIf
+    
+    ! Generate order ID
+    Set nOrderID = GenerateOrderID()
+    If nOrderID <= 0
+        Call WriteToLog("Failed to generate order ID")
+        Return -4
+    EndIf
+    
+    Set dtNow = SalDateCurrent()
+    
+    ! Begin transaction for order processing
+    Call SalSqlExecute("BEGIN TRANSACTION", gsPrimaryDB)
+    
+    ! Create order record
+    If CreateOrderRecord(nOrderID, nCustomerID, nOrderAmount, sOrderDetails, dtNow)
+        ! Update customer account balance
+        If UpdateCustomerBalance(nCustomerID, nOrderAmount)
+            ! Log the order
+            Call LogCustomerActivity(nCustomerID, "ORDER_PLACED", "Order ID " || SalNumberToString(nOrderID) || " for amount " || SalNumberToString(nOrderAmount))
+            
+            ! Commit transaction
+            Call SalSqlExecute("COMMIT", gsPrimaryDB)
+            
+            ! Send order confirmation
+            Call SendOrderConfirmation(nCustomerID, nOrderID, nOrderAmount)
+            
+            Return nOrderID
+        Else
+            Call SalSqlExecute("ROLLBACK", gsPrimaryDB)
+            Return -5
+        EndIf
+    Else
+        Call SalSqlExecute("ROLLBACK", gsPrimaryDB)
+        Return -6
+    EndIf
+```
+
+## Related Function Summaries
+
+
+## Analysis Required
+Please provide:
+1. **Function Purpose**: What does this function do?
+2. **Input Parameters**: List and describe all parameters
+3. **Return Values**: What does it return?
+4. **Business Logic**: Describe the core business rules and logic
+5. **Database Operations**: List any SQL operations or database calls
+6. **Error Handling**: Describe error handling mechanisms
+7. **Dependencies**: What other functions or components does it call?
+8. **Side Effects**: Any global variables modified or external effects
+
+## Output Format
+Provide your analysis in clear, structured markdown format.
